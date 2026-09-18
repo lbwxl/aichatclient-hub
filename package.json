@@ -1,0 +1,26 @@
+{
+  "name": "aichatclient-hub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "React-based, platform-extensible AI customer service desktop foundation",
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @aichat/desktop dev",
+    "dev:desktop": "pnpm --filter @aichat/desktop dev:desktop",
+    "dev:renderer": "pnpm --filter @aichat/desktop dev:renderer",
+    "build": "pnpm --filter @aichat/desktop build",
+    "build:desktop": "pnpm --filter @aichat/desktop build:desktop",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3",
+    "vitest": "^3.2.4"
+  }
+}

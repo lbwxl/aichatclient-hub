@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+  - packages/platforms/*
+  - packages/vendor/*
+
+electronMirror: https://npmmirror.com/mirrors/electron/
+
+onlyBuiltDependencies:
+  - electron
+  - esbuild
