@@ -74,6 +74,13 @@ export const chatMessageSchema = z.object({
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>
 
+/**
+ * The platform-neutral message name used at the platform boundary.
+ * `ChatMessage` is kept as a backwards-compatible alias for the renderer
+ * store while new platform code uses `PlatformMessage`.
+ */
+export type PlatformMessage = ChatMessage
+
 export const sendMessageCommandSchema = z.object({
   requestId: z.string().trim().min(1),
   shopId: z.string().trim().min(1),
@@ -109,6 +116,63 @@ export interface GatewayResult<T = undefined> {
     readonly retryable: boolean
   }
 }
+
+export const platformSessionSchema = z.object({
+  shopId: z.string().trim().min(1),
+  platformId: platformIdSchema,
+  externalId: z.string().trim().optional(),
+  authenticated: z.boolean(),
+  status: z.enum(['unknown', 'authenticated', 'unauthenticated', 'expired']),
+  metadata: z.record(z.string(), z.unknown()).default({})
+})
+
+export type PlatformSession = z.infer<typeof platformSessionSchema>
+
+export const skuSchema = z.object({
+  id: z.string().trim().min(1),
+  name: z.string().trim().default(''),
+  price: z.number().nonnegative().optional(),
+  stock: z.number().int().nonnegative().optional(),
+  metadata: z.record(z.string(), z.unknown()).default({})
+})
+
+export type Sku = z.infer<typeof skuSchema>
+
+export const productSchema = z.object({
+  id: z.string().trim().min(1),
+  shopId: z.string().trim().min(1),
+  platformId: platformIdSchema,
+  externalId: z.string().trim().min(1),
+  title: z.string().trim().min(1),
+  description: z.string().default(''),
+  price: z.number().nonnegative().optional(),
+  currency: z.string().trim().default('CNY'),
+  images: z.array(z.string().url()).default([]),
+  skus: z.array(skuSchema).default([]),
+  metadata: z.record(z.string(), z.unknown()).default({})
+})
+
+export type Product = z.infer<typeof productSchema>
+
+export const handoffInputSchema = z.object({
+  shopId: z.string().trim().min(1),
+  conversationId: z.string().trim().min(1),
+  customerId: z.string().trim().optional(),
+  reason: z.string().trim().default(''),
+  message: z.string().default(''),
+  metadata: z.record(z.string(), z.unknown()).default({})
+})
+
+export type HandoffInput = z.infer<typeof handoffInputSchema>
+
+export const handoffResultSchema = z.object({
+  accepted: z.boolean(),
+  handoffId: z.string().trim().optional(),
+  message: z.string().default(''),
+  metadata: z.record(z.string(), z.unknown()).default({})
+})
+
+export type HandoffResult = z.infer<typeof handoffResultSchema>
 
 export type PlatformEvent =
   | {

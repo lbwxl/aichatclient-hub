@@ -1,5 +1,5 @@
 import type { ChatMessage, ConnectionStatus, Shop } from '@aichat/contracts'
-import type { PlatformRuntime } from '@aichat/platform-sdk'
+import type { PlatformRuntimeController } from '@aichat/platform-sdk'
 import { create } from 'zustand'
 
 export interface WorkspaceState {
@@ -13,15 +13,15 @@ export interface WorkspaceState {
   setConnectionStatus(shopId: string, status: ConnectionStatus, error?: string): void
   appendMessage(message: ChatMessage): void
   selectShop(shopId: string | null): void
-  connect(shopId: string, runtime: PlatformRuntime): Promise<void>
-  disconnect(shopId: string, runtime: PlatformRuntime): Promise<void>
+  connect(shopId: string, runtime: PlatformRuntimeController): Promise<void>
+  disconnect(shopId: string, runtime: PlatformRuntimeController): Promise<void>
   sendMessage(
     shopId: string,
     conversationId: string,
     content: string,
-    runtime: PlatformRuntime
+    runtime: PlatformRuntimeController
   ): Promise<void>
-  bindRuntime(runtime: PlatformRuntime): () => void
+  bindRuntime(runtime: PlatformRuntimeController): () => void
 }
 
 const findShop = (shops: readonly Shop[], shopId: string): Shop => {

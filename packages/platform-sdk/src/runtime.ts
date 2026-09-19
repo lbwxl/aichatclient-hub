@@ -11,8 +11,12 @@ import type {
   PlatformHookContext,
   PlatformLogger,
   PlatformRuntimeOptions,
+  PlatformRuntime as PlatformRuntimeContract,
   RuntimeObserver
 } from './types'
+
+/** Structural runtime contract exported alongside the legacy constructor. */
+export interface PlatformRuntime extends PlatformRuntimeContract {}
 
 const consoleLogger: PlatformLogger = {
   debug: (message, context) => console.debug(`[platform] ${message}`, context ?? {}),
@@ -27,7 +31,11 @@ const createRequestId = (): string => {
   return `request-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-export class PlatformRuntime {
+/**
+ * Bridge-backed controller kept for the current renderer while the platform
+ * packages move to `createRuntime(context)` and explicit drivers.
+ */
+export class PlatformRuntimeController implements PlatformRuntimeContract {
   readonly #controllers = new Map<string, AbortController>()
   readonly #shops = new Map<string, Shop>()
   readonly #observers = new Set<RuntimeObserver>()
@@ -38,7 +46,7 @@ export class PlatformRuntime {
     this.#logger = options.logger ?? consoleLogger
   }
 
-  start(): void {
+  async start(): Promise<void> {
     if (this.#unsubscribeBridge) return
     this.#unsubscribeBridge = this.options.bridge.subscribe((event) => this.#handleEvent(event))
   }
@@ -60,7 +68,7 @@ export class PlatformRuntime {
     this.#emitStatus(shop.id, 'connecting')
 
     try {
-      await platform.hooks.lifecycle?.beforeConnect?.(context)
+      await platform.hooks?.lifecycle?.beforeConnect?.(context)
       const result = await this.options.bridge.connect({
         shop,
         platform: shop.platformId,
@@ -68,11 +76,11 @@ export class PlatformRuntime {
       })
       this.#assertResult(result, 'CONNECT_FAILED')
       if (controller.signal.aborted) return
-      await platform.hooks.lifecycle?.afterConnect?.(context, result)
+      await platform.hooks?.lifecycle?.afterConnect?.(context, result)
       this.#emitStatus(shop.id, 'connected')
     } catch (error) {
       if (controller.signal.aborted) return
-      await platform.hooks.lifecycle?.connectFailed?.(context, error)
+      await platform.hooks?.lifecycle?.connectFailed?.(context, error)
       this.#emitStatus(shop.id, 'error', error instanceof Error ? error.message : String(error))
       throw error
     }
@@ -88,13 +96,13 @@ export class PlatformRuntime {
     const context = this.#context(shop, controller.signal)
     this.#emitStatus(shop.id, 'disconnecting')
     try {
-      await platform.hooks.lifecycle?.beforeDisconnect?.(context)
+      await platform.hooks?.lifecycle?.beforeDisconnect?.(context)
       const result = await this.options.bridge.disconnect({
         shopId: shop.id,
         platform: shop.platformId
       })
       this.#assertResult(result, 'DISCONNECT_FAILED')
-      await platform.hooks.lifecycle?.afterDisconnect?.(context, result)
+      await platform.hooks?.lifecycle?.afterDisconnect?.(context, result)
       this.#emitStatus(shop.id, 'idle')
       this.#shops.delete(shop.id)
       this.#controllers.delete(shop.id)
@@ -122,12 +130,16 @@ export class PlatformRuntime {
       metadata: input.metadata ?? {}
     })
 
-    command = (await platform.hooks.messaging?.beforeSend?.(command, context)) ?? command
+    command = (await platform.hooks?.messaging?.beforeSend?.(command, context)) ?? command
     command = sendMessageCommandSchema.parse(command)
     const result = await this.options.bridge.sendMessage(command)
     this.#assertResult(result, 'SEND_FAILED')
-    await platform.hooks.messaging?.afterSend?.(command, result, context)
+    await platform.hooks?.messaging?.afterSend?.(command, result, context)
     return result
+  }
+
+  async stop(): Promise<void> {
+    this.dispose()
   }
 
   dispose(): void {
@@ -178,7 +190,7 @@ export class PlatformRuntime {
     }
     const controller = this.#controllers.get(shop.id) ?? new AbortController()
     try {
-      const message = platform.hooks.messaging?.normalizeIncoming?.(
+      const message = platform.hooks?.messaging?.normalizeIncoming?.(
         event.payload,
         this.#context(shop, controller.signal)
       )
@@ -192,3 +204,9 @@ export class PlatformRuntime {
     }
   }
 }
+
+/** Value export retained so existing code can continue to construct the
+ * bridge-backed controller; the type export comes from `types.ts`. */
+export const PlatformRuntime: {
+  new (options: PlatformRuntimeOptions): PlatformRuntimeController
+} = PlatformRuntimeController
