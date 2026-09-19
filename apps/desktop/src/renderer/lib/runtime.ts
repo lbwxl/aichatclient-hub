@@ -1,6 +1,7 @@
 import type { DesktopBridge, GatewayResult, PlatformEvent, SendMessageCommand, ConnectRequest, DisconnectRequest, Unsubscribe } from '@aichat/contracts'
 import { PlatformRuntime } from '@aichat/platform-sdk'
-import { DemoBridge, platformRegistry } from '@aichat/core'
+import { DemoBridge } from '@aichat/core'
+import { platformRegistry } from '../../bootstrap/platform-registry'
 
 const unavailableBridge: DesktopBridge = {
   async connect(): Promise<GatewayResult> { return { ok: false, error: { code: 'DESKTOP_BRIDGE_UNAVAILABLE', message: 'Electron desktop bridge is not available', retryable: false } } },

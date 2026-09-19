@@ -7,14 +7,7 @@
   "scripts": { "typecheck": "tsc --noEmit -p tsconfig.json" },
   "dependencies": {
     "@aichat/contracts": "workspace:*",
-    "@aichat/platform-douyin": "workspace:*",
-    "@aichat/platform-goofish": "workspace:*",
-    "@aichat/platform-kuaishou": "workspace:*",
-    "@aichat/platform-pinduoduo": "workspace:*",
-    "@aichat/platform-qianniu": "workspace:*",
     "@aichat/platform-sdk": "workspace:*",
-    "@aichat/platform-wechat": "workspace:*",
-    "@aichat/platform-wework": "workspace:*",
     "zustand": "^5.0.8"
   },
   "devDependencies": { "typescript": "^5.9.2" }

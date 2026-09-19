@@ -32,4 +32,4 @@ export const platform = definePlatform({
 })
 ```
 
-然后在 `packages/contracts/src/index.ts` 增加平台 id，并在 `packages/core/src/platform-catalog.ts` 注册一次。真实平台通信放在 `apps/desktop/src/main` 的 `PlatformDriver`，不能从平台包直接调用 `ipcRenderer`。
+然后在 Desktop 应用的 composition root（`apps/desktop/src/bootstrap/platform-registry.ts`）注册一次。平台通信、Hook 和 runtime driver 都留在平台 package 内；平台 package 不直接调用 `ipcRenderer`。

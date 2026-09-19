@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'node:path'
 
+import { createPlatformScheduler } from '../bootstrap/platform-registry'
 import { registerIpcRouter, type IpcMainTransport } from './ipc-router'
-import { WorkbenchManager, WORKBENCH_LOG_CHANNEL } from './workbench-manager'
+import { WorkbenchManager } from './workbench-manager'
 
 const createIpcTransport = (): IpcMainTransport => ({
   handle(channel, handler) {
@@ -56,17 +57,38 @@ const installWindowHandlers = (): void => {
 app.whenReady().then(() => {
   installWindowHandlers()
 
+  const webviewWindows = new Map<string, BrowserWindow>()
+  const scheduler = createPlatformScheduler({
+    services: {
+      getWebviewExecutor: (shop: { id: string }) => {
+        const window = webviewWindows.get(shop.id)
+        if (!window || window.isDestroyed()) return undefined
+        return <T>(expression: string) => window.webContents.executeJavaScript(expression, true) as Promise<T>
+      },
+      isWebviewReady: (shop: { id: string }) => {
+        const window = webviewWindows.get(shop.id)
+        return Boolean(window && !window.isDestroyed() && !window.webContents.isLoadingMainFrame())
+      }
+    }
+  })
+
   // Keep the shared IPC contract active even before platform drivers are wired.
   // Platform-specific work continues through the WebView runtime in the renderer.
   registerIpcRouter({
     transport: createIpcTransport(),
-    drivers: new Map()
+    scheduler
   })
 
-  const manager = new WorkbenchManager((channel, payload) => {
-    for (const window of BrowserWindow.getAllWindows()) if (!window.isDestroyed()) window.webContents.send(channel, payload)
+  const manager = new WorkbenchManager({
+    scheduler,
+    webviewWindows,
+    emit: (channel, payload) => {
+      for (const window of BrowserWindow.getAllWindows()) if (!window.isDestroyed()) window.webContents.send(channel, payload)
+    }
   })
   manager.register()
+
+  app.on('before-quit', () => { void manager.dispose() })
 
   createWindow()
   app.on('activate', () => {

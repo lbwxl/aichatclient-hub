@@ -7,8 +7,8 @@ flowchart LR
   UI[React Desktop UI<br/>Tailwind + TanStack Router] --> Store[Zustand Workspace Store]
   Store --> Backend[backend-client<br/>Auth + Shops + Error Mapping]
   Store --> Runtime[Platform Runtime SDK]
-  Runtime --> Catalog[Platform Catalog<br/>仅启用抖店]
-  Catalog --> Douyin[packages/platforms/douyin]
+  Runtime --> Registry[Desktop composition root<br/>PlatformRegistry + Scheduler]
+  Registry --> Douyin[packages/platforms/douyin]
   Douyin --> Hook[@platform-hub/doudian-hook<br/>window runtime typed client]
   Hook --> Webview[Electron WebView / CDP Runtime.evaluate]
   Backend --> API[(f.mchaoai.com:8001/api/v1)]
@@ -42,12 +42,13 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-  participant View as DoudianWebView
+  participant View as PlatformView
   participant Hook as doudian-hook
   participant Runtime as PlatformRuntime
   participant Store as Zustand
   participant UI as Conversation UI
-  View->>Hook: install()
+  View->>Runtime: start()
+  Runtime->>Hook: install()
   Hook-->>View: window.__platformHub
   View->>Hook: getAuthState()/listSessions()
   Hook-->>View: normalized sessions
@@ -61,12 +62,12 @@ sequenceDiagram
 ## 目录约束
 
 ```text
-apps/desktop                 只负责 Electron composition + React UI
+apps/desktop                 负责 Electron composition + React UI + platform registry
 packages/contracts           跨边界数据契约与 zod schema
 packages/backend-client      后端 URL、token、HTTP 错误、snake_case 适配
 packages/platform-sdk        平台生命周期与统一消息协议
 packages/platforms/douyin    抖店 manifest + 最新 doudian-hook adapter
-packages/core                Zustand store + active platform catalog
+packages/core                Zustand store + platform-neutral use cases
 ```
 
 UI 不直接调用 `fetch`，平台包不读取 DOM，后端字段不泄漏到 React 组件。

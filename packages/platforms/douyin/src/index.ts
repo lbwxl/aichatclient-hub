@@ -1,4 +1,5 @@
 import { definePlatform } from '@aichat/platform-sdk'
+import { createDouyinRuntime } from './runtime'
 export {
   createDoudianClient,
   doudianHook,
@@ -17,8 +18,10 @@ export const douyinPlatform = definePlatform({
     color: '#2864dc',
     loginUrl: 'https://im.jinritemai.com/pc_seller_v2/main/workspace'
   },
+  createRuntime: createDouyinRuntime,
   hooks: douyinHooks
 })
 
 export { douyinHooks } from './hooks'
 export * from './adapter'
+export { createDouyinRuntime } from './runtime'

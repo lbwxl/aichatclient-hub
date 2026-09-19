@@ -1,8 +1,8 @@
 # AI Chat Client Hub
 
-React + TypeScript + Electron monorepo for the desktop client. The current
-production surface intentionally enables only Doudian and keeps backend,
-runtime and UI boundaries separate.
+React + TypeScript + Electron monorepo for the desktop client. Platform
+packages are composed by the Desktop application and run through the shared
+PlatformRegistry and PlatformScheduler.
 
 ## Start
 
@@ -21,11 +21,11 @@ opens only the Vite web surface and does not provide Electron WebView or IPC.
 
 - `packages/backend-client`: `http://f.mchaoai.com:8001/api/v1`, token handling,
   response/error mapping and `shop_id` normalization.
-- `packages/platforms/douyin`: only active platform package. It vendors the
-  latest `@platform-hub/doudian-hook` and exposes a typed WebView adapter.
-- `packages/core`: Zustand workspace state and the active platform catalog.
-- `apps/desktop`: Tailwind UI, TanStack Router routes, authentication flow and
-  Electron composition points.
+- `packages/platforms/*`: platform manifests, runtime drivers and adapters.
+- `packages/core`: Zustand workspace state and platform-neutral use cases.
+- `apps/desktop/src/bootstrap/platform-registry.ts`: platform composition root.
+- `apps/desktop`: Tailwind UI, TanStack Router routes, authentication flow,
+  Electron composition and PlatformScheduler wiring.
 
 The module and sequence diagrams are in [docs/architecture.md](docs/architecture.md).
 

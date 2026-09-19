@@ -1,16 +1,7 @@
 import { z } from 'zod'
 
-export const PLATFORM_IDS = [
-  'douyin',
-  'pinduoduo',
-  'kuaishou',
-  'goofish',
-  'qianniu',
-  'wechat',
-  'wework'
-] as const
-
-// Platform packages are the source of truth; adding one must not require editing an enum.
+// Platform packages are the source of truth. Platform ids are validated for
+// shape here and resolved at runtime by PlatformRegistry.
 export const platformIdSchema = z.string().regex(/^[a-z][a-z0-9-]{0,49}$/)
 export type PlatformId = z.infer<typeof platformIdSchema>
 

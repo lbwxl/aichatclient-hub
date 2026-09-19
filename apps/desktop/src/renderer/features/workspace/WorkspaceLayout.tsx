@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Bell, BookOpen, CircleHelp, ClipboardList, Home, Plus, RefreshCw, Settings, UserRound } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import { platformOptions } from '@aichat/core'
+import { platformOptions } from '../../../bootstrap/platform-registry'
 import { backendClient } from '../../lib/backend'
 
 import { useSessionStore } from '../../lib/session-store'
@@ -48,7 +48,7 @@ export function WorkspaceLayout({ children }: { readonly children: ReactNode }) 
 }
 
 function AddShopModal({ onClose }: { readonly onClose: () => void }) {
-  const [platform, setPlatform] = useState(platformOptions[0]?.id ?? 'douyin'); const [name, setName] = useState(''); const [url, setUrl] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false)
+  const [platform, setPlatform] = useState(platformOptions[0]?.id ?? ''); const [name, setName] = useState(''); const [url, setUrl] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false)
   const save = async (event: React.FormEvent) => { event.preventDefault(); setBusy(true); try { await backendClient.createShop({ platform_en: platform, platform: platformOptions.find((item) => item.id === platform)?.label, shop_name: name || undefined, url: url || undefined }); onClose(); window.location.reload() } catch (cause) { setError(cause instanceof Error ? cause.message : String(cause)) } finally { setBusy(false) } }
   return <div className="fixed inset-0 z-[90] grid place-items-center bg-slate-900/30 p-4 backdrop-blur-sm"><form onSubmit={(event) => void save(event)} className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"><div className="flex items-start justify-between"><div><p className="text-xs font-semibold tracking-widest text-blue-600">店铺管理</p><h3 className="mt-1 text-lg font-semibold text-slate-700">添加平台店铺</h3></div><button type="button" onClick={onClose} className="text-xl text-slate-400">×</button></div><label className="mt-5 block text-xs text-slate-600">平台<select value={platform} onChange={(event) => setPlatform(event.target.value)} className="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3">{platformOptions.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label><label className="mt-3 block text-xs text-slate-600">店铺名称<input value={name} onChange={(event) => setName(event.target.value)} className="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3" placeholder="登录后可自动识别" /></label><label className="mt-3 block text-xs text-slate-600">工作台地址<input value={url} onChange={(event) => setUrl(event.target.value)} className="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3" placeholder="可选，使用平台默认地址" /></label>{error && <p className="mt-3 rounded bg-rose-50 p-2 text-xs text-rose-600">{error}</p>}<button disabled={busy} className="mt-5 h-10 w-full rounded-lg bg-blue-600 text-sm font-medium text-white disabled:opacity-60">{busy ? '正在保存…' : '保存并打开'}</button></form></div>
 }

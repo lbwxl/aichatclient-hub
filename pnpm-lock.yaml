@@ -35,9 +35,27 @@ importers:
       '@aichat/platform-douyin':
         specifier: workspace:*
         version: link:../../packages/platforms/douyin
+      '@aichat/platform-goofish':
+        specifier: workspace:*
+        version: link:../../packages/platforms/goofish
+      '@aichat/platform-kuaishou':
+        specifier: workspace:*
+        version: link:../../packages/platforms/kuaishou
+      '@aichat/platform-pinduoduo':
+        specifier: workspace:*
+        version: link:../../packages/platforms/pinduoduo
+      '@aichat/platform-qianniu':
+        specifier: workspace:*
+        version: link:../../packages/platforms/qianniu
       '@aichat/platform-sdk':
         specifier: workspace:*
         version: link:../../packages/platform-sdk
+      '@aichat/platform-wechat':
+        specifier: workspace:*
+        version: link:../../packages/platforms/wechat
+      '@aichat/platform-wework':
+        specifier: workspace:*
+        version: link:../../packages/platforms/wework
       '@tanstack/react-query':
         specifier: ^5.87.4
         version: 5.103.1(react@19.3.0)
@@ -116,30 +134,9 @@ importers:
       '@aichat/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@aichat/platform-douyin':
-        specifier: workspace:*
-        version: link:../platforms/douyin
-      '@aichat/platform-goofish':
-        specifier: workspace:*
-        version: link:../platforms/goofish
-      '@aichat/platform-kuaishou':
-        specifier: workspace:*
-        version: link:../platforms/kuaishou
-      '@aichat/platform-pinduoduo':
-        specifier: workspace:*
-        version: link:../platforms/pinduoduo
-      '@aichat/platform-qianniu':
-        specifier: workspace:*
-        version: link:../platforms/qianniu
       '@aichat/platform-sdk':
         specifier: workspace:*
         version: link:../platform-sdk
-      '@aichat/platform-wechat':
-        specifier: workspace:*
-        version: link:../platforms/wechat
-      '@aichat/platform-wework':
-        specifier: workspace:*
-        version: link:../platforms/wework
       zustand:
         specifier: ^5.0.8
         version: 5.0.15(@types/react@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0))
