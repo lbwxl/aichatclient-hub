@@ -1,45 +1,10 @@
 import { z } from 'zod'
 
-// Platform packages are the source of truth. Platform ids are validated for
-// shape here and resolved at runtime by PlatformRegistry.
-export const platformIdSchema = z.string().regex(/^[a-z][a-z0-9-]{0,49}$/)
-export type PlatformId = z.infer<typeof platformIdSchema>
+import { platformIdSchema, type PlatformId } from './platform'
+import { shopSchema } from './shop'
 
-export const platformHostSchema = z.enum(['webview', 'native', 'service'])
-export type PlatformHost = z.infer<typeof platformHostSchema>
-
-export const platformCapabilitySchema = z.enum([
-  'messaging',
-  'file-upload',
-  'goods-sync',
-  'goods-learn',
-  'script-injection',
-  'hidden-sender'
-])
-export type PlatformCapability = z.infer<typeof platformCapabilitySchema>
-
-export interface PlatformManifest {
-  readonly id: PlatformId
-  readonly displayName: string
-  readonly host: PlatformHost
-  readonly capabilities: readonly PlatformCapability[]
-  readonly color: string
-  readonly loginUrl?: string
-}
-
-export const shopSchema = z.object({
-  id: z.string().trim().min(1),
-  platformId: platformIdSchema,
-  displayName: z.string().trim().min(1),
-  accountName: z.string().trim().default(''),
-  externalId: z.string().trim().optional(),
-  avatarUrl: z.string().url().optional(),
-  autoReplyEnabled: z.boolean().default(false),
-  unreadCount: z.number().int().nonnegative().default(0),
-  metadata: z.record(z.string(), z.unknown()).default({})
-})
-
-export type Shop = z.infer<typeof shopSchema>
+export * from './platform'
+export * from './shop'
 
 export const connectionStatusSchema = z.enum([
   'idle',

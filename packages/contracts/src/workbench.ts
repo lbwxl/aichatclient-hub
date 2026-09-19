@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { shopSchema } from './index'
+
+import { shopSchema } from './shop'
 
 export const boundsSchema = z.object({ x: z.number().int().nonnegative(), y: z.number().int().nonnegative(), width: z.number().int().min(1).max(10000), height: z.number().int().min(1).max(10000) })
 export const settingsSchema = z.object({ concurrency: z.number().int().min(1).max(4), minimizeToTray: z.boolean(), logLimit: z.number().int().min(100).max(2000) })
